@@ -35,6 +35,7 @@ export default class {
       .then(snapshot => {
         const bills = snapshot
           .map(doc => {
+            console.log("rd", doc.date)
             try {
               return {
                 ...doc,
@@ -49,7 +50,9 @@ export default class {
                 ...doc,
                 date: doc.date,
                 status: formatStatus(doc.status)
+
               }
+
             }
           })
           console.log('length', bills.length)
