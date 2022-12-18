@@ -2,22 +2,16 @@
  * @jest-environment jsdom
  */
 
-import { screen, waitFor, fireEvent } from '@testing-library/dom';
+import { screen, waitFor } from '@testing-library/dom';
 import BillsUI from '../views/BillsUI.js';
 import { bills } from '../fixtures/bills.js';
 import { ROUTES_PATH } from '../constants/routes.js';
 import { ROUTES } from '../constants/routes';
 import { localStorageMock } from '../__mocks__/localStorage.js';
 import mockStore from '../__mocks__/store';
-import mockedBills from '../__mocks__/store.js';
 import userEvent from '@testing-library/user-event';
-
 import router from '../app/Router.js';
 import Bills from '../containers/Bills.js';
-import store from '../__mocks__/store.js';
-import { formatDate, formatStatus } from '../app/format.js';
-import NewBillUI from '../views/NewBillUI.js';
-import DashboardFormUI from '../views/DashboardFormUI.js';
 
 jest.mock('../app/Store', () => mockStore);
 
@@ -58,7 +52,6 @@ describe('Given I am connected as an employee', () => {
 
   describe('And I click on the eye icon', () => {
     test('A modal should open', () => {
-      document.body.innerHTML = BillsUI({ data: bills });
       const sampleBills = new Bills({
         document,
         onNavigate,
@@ -70,7 +63,6 @@ describe('Given I am connected as an employee', () => {
       expect(sampleBills.handleClickIconEye).toBeCalled();
     });
     test('Then the modal should display the attached image', () => {
-      document.body.innerHTML = BillsUI({ data: bills });
       const sampleBills = new Bills({
         document,
         onNavigate,
@@ -81,20 +73,14 @@ describe('Given I am connected as an employee', () => {
       $.fn.modal = jest.fn();
       sampleBills.handleClickIconEye(iconEye);
       expect($.fn.modal).toBeCalled();
-      expect(document.querySelector('.modal')).toBeTruthy();
+      const img = document.querySelector('.bill-proof-container img');
+      expect(img).toBeTruthy();
     });
   });
 });
 
 describe('When I am on Bills page and I click on the new bill button', () => {
-  test('click sur le bouton new bill', () => {
-    Object.defineProperty(window, 'localStorage', { value: localStorageMock });
-    window.localStorage.setItem(
-      'user',
-      JSON.stringify({
-        type: 'Employee',
-      })
-    );
+  test('Then i access the form to create a new bill', () => {
     document.body.innerHTML = BillsUI({ data: [bills[0]] });
     const onNavigate = (pathname) => {
       document.body.innerHTML = ROUTES({ pathname });
